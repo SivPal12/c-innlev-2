@@ -206,5 +206,4 @@ release.properties
 .classpath
 .project
 
-CMakeLists.txt
 empty.c
