@@ -17,6 +17,7 @@ int main (int argc, char *argv[]){
 
 int encode(const char *inputMessageFile, const char *keyFile,
     char *encodedStream) {
+  // TODO Handle realloc failed
   char *pFormattedKey = malloc(0);
   // TODO Insert correct values
   formatKey("ABCABCABC. ,", pFormattedKey);
@@ -32,6 +33,7 @@ int formatKey(const char *key, char *formattedKey) {
   for (int i = 0; key[i]; i++ ) {
     if (numChars < i) {
       numChars += 4098;
+      // Handle realloc failed
       formattedKey = realloc(formattedKey, sizeof(char)*numChars);
     }
     char currentChar = key[i];
@@ -47,6 +49,7 @@ int formatKey(const char *key, char *formattedKey) {
     printf("New char: %c\n", currentChar);
   }
   // Resize formattedKey
+  // TODO Handle realloc failed
   formattedKey = realloc(formattedKey, sizeof(char)*currentIndexInFormattedKey);
   printf("formatted: %s\n", formattedKey);
   return 0;
