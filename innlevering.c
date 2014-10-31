@@ -19,26 +19,30 @@ int main (int argc, char *argv[]){
 
 int encode(const char *inputMessageFile, const char *keyFile,
     char *encodedStream) {
-  char * rawKey = readFile(keyFile);
-  printf("Raw key:\n %s\n", rawKey);
+  char *rawKey = readFile(keyFile);
+  printf("Raw key:\n%s\n", rawKey);
   // TODO Handle realloc failed
   char *pFormattedKey = malloc(0);
   // TODO Insert correct values
-  formatKey("ABCABCABC. ,", pFormattedKey);
+  formatKey(rawKey, pFormattedKey);
   printf("Formatted key:\t%s\n\n", pFormattedKey);
 
   free(pFormattedKey);
+  free(rawKey);
 }
 
 int formatKey(const char *key, char *formattedKey) {
-  int numChars = 4098;
-
+  int numChars = 0;
   int currentIndexInFormattedKey = 0;
   for (int i = 0; key[i]; i++ ) {
     if (numChars < i) {
       numChars += 4098;
-      // Handle realloc failed
-      formattedKey = realloc(formattedKey, sizeof(char)*numChars);
+      char *pTmp = realloc(formattedKey, sizeof(char)*numChars);
+      if (pTmp == NULL) {
+        printf("Realloc failed\n");
+        return 1;
+      }
+      formattedKey = pTmp;
     }
     char currentChar = key[i];
     // TODO Use string lib
@@ -52,8 +56,12 @@ int formatKey(const char *key, char *formattedKey) {
     }
   }
   // Resize formattedKey
-  // TODO Handle realloc failed
-  formattedKey = realloc(formattedKey, sizeof(char)*currentIndexInFormattedKey);
+  char *pTmp = realloc(formattedKey, sizeof(char)*currentIndexInFormattedKey);
+  if (pTmp == NULL) {
+    printf("Realloc failed\n");
+    return 1;
+  }
+  formattedKey = pTmp;
   return 0;
 }
 
