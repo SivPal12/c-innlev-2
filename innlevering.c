@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+const char *outputFile = "encodedText.txt";
+
 int encode(const char *inputMessageFile, const char *keyFile,
     char *encodedStream);
 
@@ -26,6 +28,16 @@ int encode(const char *inputMessageFile, const char *keyFile,
   // TODO Insert correct values
   formatKey(rawKey, pFormattedKey);
   printf("Formatted key:\t%s\n\n", pFormattedKey);
+
+  FILE *pFile;
+  pFile = fopenf(outputFile, "a");
+  if (pFile == NULL) {
+    printf("Could not open file: '%s'", outputFile);
+    return 1;
+  }
+  
+  fprintf(pFile, "[%d]", 
+  fclose(pFile);
 
   free(pFormattedKey);
   free(rawKey);
