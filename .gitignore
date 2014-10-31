@@ -207,3 +207,4 @@ release.properties
 .project
 
 CMakeLists.txt
+empty.c
