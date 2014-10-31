@@ -1,0 +1,4 @@
+This project was build using the following apt-get pacages:
+cmake
+make
+build-essential
