@@ -27,17 +27,35 @@ int encode(const char *inputMessageFile, const char *keyFile,
   char *pFormattedKey = malloc(0);
   // TODO Insert correct values
   formatKey(rawKey, pFormattedKey);
-  printf("Formatted key:\t%s\n\n", pFormattedKey);
+  printf("Formatted key:\n%s\n\n", pFormattedKey);
 
-  FILE *pFile;
-  pFile = fopenf(outputFile, "a");
-  if (pFile == NULL) {
-    printf("Could not open file: '%s'", outputFile);
-    return 1;
+  // TODO Read msg file
+  char *msgToEncode = "There is a concert.......";
+
+  int msgIndex = -1, keyIndex = 0, encodedStreamSize = 0;
+  while (msgToEncode[++msgIndex] != '\0') {
+    // TODO better logic
+    if (encodedStreamSize <= msgIndex +10) {
+      encodedStreamSize += 4098;
+      //TODO Handle failed
+      encodedStream = realloc(encodedStream, sizeof(char)*encodedStreamSize);
+    }
+    // if [a-zA-Z]
+    if (msgToEncode[msgIndex] >= 'a' &&
+        msgToEncode[msgIndex] <= 'z' ||
+        msgToEncode[msgIndex] >= 'A' &&
+        msgToEncode[msgIndex] <= 'Z') {
+      encodedStream[keyIndex++] = 'n';
+      encodedStream[keyIndex++] = 'a';
+    } else {
+      encodedStream[keyIndex++] = msgToEncode[msgIndex];
+    }
   }
-  
-  fprintf(pFile, "[%d]", 
-  fclose(pFile);
+
+  // TODO                                                        v -- Why??
+  encodedStream = realloc(encodedStream, keyIndex*sizeof(char) + 1);
+
+  printf("Encoded msg:\n%s\n\n", encodedStream);
 
   free(pFormattedKey);
   free(rawKey);
