@@ -129,26 +129,20 @@ printf("To encode: %c\n", charToEncode);
 
   while (tolower(charToEncode) != key[keyIndex]) {
     if (keyIndex++ >= keyLength) {
-      keyIndex = 0;
+      keyIndex %= keyLength;
     }
   }
 
   encodedChar = realloc(encodedChar, sizeof(int)+4);
   char *buffer;
 
-printf("PreS size: %lu\n", sizeof(encodedChar));
   if (islower(charToEncode)) {
-//    strcpy(encodedChar, "[%d]");
     buffer = "[%d]";
   } else {
-//    strcpy(encodedChar, "[-%d]");
     buffer = "[-%d]";
   }
-printf("Post size: %lu\n", sizeof(encodedChar));
 
-//  sprintf(encodedChar, encodedChar, keyIndex+1);
   sprintf(encodedChar, buffer, keyIndex+1);
-printf("Encoded char: %s\n", encodedChar);
 
   return keyIndex;
 }
