@@ -37,6 +37,8 @@ int encode(const char *inputMessageFile, const char *keyFile,
   while (msgToEncode[msgIndex] != '\0') {
     char *encodedChar = malloc(0);
     keyIndex = encodeChar(msgToEncode[msgIndex], pFormattedKey, encodedChar, keyIndex);
+    // TODO Extract to constant or parameter
+    keyIndex += 13;
     int encodedCharLength = strlen(encodedChar);
     encodedSize += encodedCharLength;
     if (bufferSize <= encodedSize) {
