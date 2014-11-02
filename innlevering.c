@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <math.h>
 
 
 int encode(const char *inputMessageFile, const char *keyFile,
@@ -19,11 +20,13 @@ int encodeChar(char charToEncode, char *formattedKey, char *encodedChar, int key
 /* return codes:
  * 1 - mem alloc failed
  * 2 - Could not open file
+ * 3 - Unable to satisfy min spacing
  */
 int main (int argc, char *argv[]){
   char *toEncode = "msg/msg.txt";
   char *pEncoded;
   char *pKeyFile = "songLibrary/sweetChildGR.txt";
+  int minSpacing = 2;
   int status = encode(toEncode, pKeyFile, pEncoded, minSpacing);
   if (status != 0) {
     return status;
@@ -53,7 +56,8 @@ int encode(const char *inputMessageFile, const char *keyFile,
     return 2;
   }
 
-  int msgIndex = 0, encodedSize = 0, keyIndex = 0, bufferSize = 0;
+  int msgIndex = 0, encodedSize = 0, keyIndex = strlen(pFormattedKey) + minSpacing + 1, bufferSize = 0;
+  printf("Initial keyIndex: %d\n", keyIndex);
   while (msgToEncode[msgIndex] != '\0') {
     char *encodedChar = malloc(0);
     if (encodedChar == NULL) {
@@ -61,9 +65,29 @@ int encode(const char *inputMessageFile, const char *keyFile,
       return 1;
     }
 
-    keyIndex = encodeChar(msgToEncode[msgIndex], pFormattedKey, encodedChar, keyIndex);
+//    keyIndex = encodeChar(msgToEncode[msgIndex], pFormattedKey, encodedChar, keyIndex);
+    int tmp = encodeChar(msgToEncode[msgIndex], pFormattedKey, encodedChar, keyIndex);
+    if (tmp < 0) {
+      return tmp;
+    }
+    // TODO Test this
+    printf("MinSpacing: %d\ttmp: %d\tkeyIndex: %d, msgLength: %d\n",
+        minSpacing, tmp, (keyIndex - minSpacing), (int)strlen(pFormattedKey));
 
-    keyIndex += minSpacing;
+/*    if (tmp - (keyIndex - minSpacing) < minSpacing &&
+        tmp > (keyIndex - minSpacing) ||
+        tmp <= (keyIndex - minSpacing) &&
+        (tmp + (int)strlen(pFormattedKey)) - (keyIndex - minSpacing) < minSpacing) {*/
+    printf("Abs %f\n", fabs((int)(tmp % strlen(pFormattedKey)) - (keyIndex - minSpacing)));
+    if (fabs((int)(tmp % strlen(pFormattedKey)) - (keyIndex - minSpacing)) < minSpacing) {
+      printf("Tmp: %d\tkeyIndex: %d\tminSpacing: %d\tlen: %d\n",
+          tmp, keyIndex, minSpacing, (int)strlen(pFormattedKey));
+      printf("Unable to satisfy min spacing\n");
+      return 3;
+    }
+    printf("Adding %d to keyIndex %d = %d (max: %d)\n\n",
+        minSpacing, tmp, (tmp + minSpacing) % (int)strlen(pFormattedKey), (int)strlen(pFormattedKey));
+    keyIndex = ((tmp + minSpacing) % (int)strlen(pFormattedKey));
 
     int encodedCharLength = strlen(encodedChar);
     encodedSize += encodedCharLength;
@@ -161,9 +185,14 @@ printf("To encode: %c\n", charToEncode);
   }
   int keyLength = strlen(key);
 
+  int numLoops = 0;
   while (tolower(charToEncode) != key[keyIndex]) {
-    if (keyIndex++ >= keyLength) {
+    if (++keyIndex >= keyLength) {
       // TODO Avoid infinity loop
+      if (++numLoops > 1) {
+        printf("Unable to find char '%c' in key", charToEncode);
+        return -1;
+      }
       keyIndex %= keyLength;
     }
   }
