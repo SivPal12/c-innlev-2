@@ -57,7 +57,6 @@ int encode(const char *inputMessageFile, const char *keyFile,
   }
 
   int msgIndex = 0, encodedSize = 0, keyIndex = strlen(pFormattedKey) + minSpacing + 1, bufferSize = 0;
-  printf("Initial keyIndex: %d\n", keyIndex);
   while (msgToEncode[msgIndex] != '\0') {
     char *encodedChar = malloc(0);
     if (encodedChar == NULL) {
@@ -65,28 +64,17 @@ int encode(const char *inputMessageFile, const char *keyFile,
       return 1;
     }
 
-//    keyIndex = encodeChar(msgToEncode[msgIndex], pFormattedKey, encodedChar, keyIndex);
     int tmp = encodeChar(msgToEncode[msgIndex], pFormattedKey, encodedChar, keyIndex);
     if (tmp < 0) {
       return tmp;
     }
-    // TODO Test this
-    printf("MinSpacing: %d\ttmp: %d\tkeyIndex: %d, msgLength: %d\n",
-        minSpacing, tmp, (keyIndex - minSpacing), (int)strlen(pFormattedKey));
 
-/*    if (tmp - (keyIndex - minSpacing) < minSpacing &&
-        tmp > (keyIndex - minSpacing) ||
-        tmp <= (keyIndex - minSpacing) &&
-        (tmp + (int)strlen(pFormattedKey)) - (keyIndex - minSpacing) < minSpacing) {*/
-    printf("Abs %f\n", fabs((int)(tmp % strlen(pFormattedKey)) - (keyIndex - minSpacing)));
+    printf("fabs: %d   keyIndex: %d   minSpacing: %d   tmp: %d   Keylen: %d\n",
+        (int)(fabs((int)(tmp % strlen(pFormattedKey)))),2,3,4,5);//, keyIndex, minSpacing, tmp, (int)strlen(pFormattedKey));*/
     if (fabs((int)(tmp % strlen(pFormattedKey)) - (keyIndex - minSpacing)) < minSpacing) {
-      printf("Tmp: %d\tkeyIndex: %d\tminSpacing: %d\tlen: %d\n",
-          tmp, keyIndex, minSpacing, (int)strlen(pFormattedKey));
       printf("Unable to satisfy min spacing\n");
       return 3;
     }
-    printf("Adding %d to keyIndex %d = %d (max: %d)\n\n",
-        minSpacing, tmp, (tmp + minSpacing) % (int)strlen(pFormattedKey), (int)strlen(pFormattedKey));
     keyIndex = ((tmp + minSpacing) % (int)strlen(pFormattedKey));
 
     int encodedCharLength = strlen(encodedChar);
