@@ -177,8 +177,8 @@ printf("To encode: %c\n", charToEncode);
   while (tolower(charToEncode) != key[keyIndex]) {
     if (++keyIndex >= keyLength) {
       // TODO Avoid infinity loop
-      if (++numLoops > 1) {
-        printf("Unable to find char '%c' in key", charToEncode);
+      if (numLoops++ > 1) {
+        printf("Unable to find char '%c' in key\n", charToEncode);
         return -1;
       }
       keyIndex %= keyLength;
