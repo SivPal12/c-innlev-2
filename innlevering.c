@@ -24,15 +24,14 @@ int encodeChar(char charToEncode, char *formattedKey, char *encodedChar, int key
  */
 int main (int argc, char *argv[]){
   char *toEncode = "msg/msg.txt";
-  char *pEncoded;
+  char *pEncoded = malloc(4089); // Any value less than 4089 breaks the pointer
+  // Why does values less than 4089 break the code????
   char *pKeyFile = "songLibrary/sweetChildGR.txt";
   int minSpacing = 2;
   int status = encode(toEncode, pKeyFile, pEncoded, minSpacing);
   if (status != 0) {
     return status;
   }
-
-  printf("%s", pEncoded);
 
   return 1;
 }
@@ -41,8 +40,8 @@ int encode(const char *inputMessageFile, const char *keyFile,
     char *encodedStream, int minSpacing) {
   char *rawKey = readFile(keyFile);
   printf("Raw key:\n%s\n", rawKey);
-
   char *pFormattedKey = malloc(0);
+
   if (pFormattedKey == NULL) {
     printf("Malloc failed\n");
     return 1;
@@ -78,25 +77,27 @@ int encode(const char *inputMessageFile, const char *keyFile,
     int encodedCharLength = strlen(encodedChar);
     encodedSize += encodedCharLength;
     if (bufferSize <= encodedSize) {
+
       bufferSize += 4098;
 
-      encodedStream = realloc(encodedStream, sizeof(char)*bufferSize);
-      if (encodedStream == NULL) {
+      char *pTmp = realloc(encodedStream, sizeof(char)*bufferSize);
+      if (pTmp == NULL) {
         printf("Realloc failed\n");
         return 1;
       }
+      encodedStream = pTmp;
     }
     strcat(encodedStream, encodedChar);
     free(encodedChar);
     msgIndex++;
   }
 
-  encodedStream = realloc(encodedStream, sizeof(char)*encodedSize);
-  if (encodedStream == NULL) {
+  char *pTmp = realloc(encodedStream, sizeof(char)*encodedSize+1);
+  if (pTmp == NULL) {
     printf("Realloc failed\n");
     return 1;
   }
-
+  encodedStream = pTmp;
   printf("Encoded:\n%s\n", encodedStream);
 
   free(pFormattedKey);
@@ -173,7 +174,6 @@ int encodeChar(char charToEncode, char *key, char *encodedChar, int keyIndex) {
   int numLoops = 0;
   while (tolower(charToEncode) != key[keyIndex]) {
     if (++keyIndex >= keyLength) {
-      // TODO Avoid infinity loop
       if (numLoops++ > 1) {
         printf("Unable to find char '%c' in key\n", charToEncode);
         return -1;
