@@ -1,3 +1,13 @@
+/*
+ * To run:
+ * cmake .
+ * make
+ * ./innlevering.o
+ */
+
+
+
+
 /* TODO
  * Fix - Formatted key is sometimes not the right length (abc.. key, 'hello' msg)
  */
@@ -8,13 +18,17 @@
 #include <math.h>
 
 
+// Takes path to msg file, path to key file, buffer to store encoding and minimum spacing
 int encode(const char *inputMessageFile, const char *keyFile,
     char *encodedStream, int minSpacing);
 
+// Takes path to keyfile and buffer to store the formatted key
 int formatKey(const char *keyFile, char *formattedKey);
 
+// Takes path to file and returns file content
 char *readFile(const char *file);
 
+// Takes char to encode, the key to use, buffer sto store result and index to start from
 int encodeChar(char charToEncode, char *formattedKey, char *encodedChar, int keyIndex);
 
 //int decode(char *toDecode, char *keyFile, char *decodedStream);
