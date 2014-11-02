@@ -1,3 +1,6 @@
+/* TODO
+ * Fix - Formatted key is sometimes not the right length (abc.. key, 'hello' msg)
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
