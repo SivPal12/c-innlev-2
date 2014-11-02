@@ -17,6 +17,8 @@ char *readFile(const char *file);
 
 int encodeChar(char charToEncode, char *formattedKey, char *encodedChar, int keyIndex);
 
+//int decode(char *toDecode, char *keyFile, char *decodedStream);
+
 /* return codes:
  * 1 - mem alloc failed
  * 2 - Could not open file
@@ -32,6 +34,19 @@ int main (int argc, char *argv[]){
   if (status != 0) {
     return status;
   }
+
+  printf("Encoded\n%s\n", pEncoded);
+
+// Not finished
+/*
+  char *decoded = malloc(0);
+
+  decode(pEncoded, pKeyFile, decoded);
+
+  printf("Decoded:\n%s\n", decoded);
+*/
+  free(pEncoded);
+//  free(decoded);
 
   return 1;
 }
@@ -98,7 +113,6 @@ int encode(const char *inputMessageFile, const char *keyFile,
     return 1;
   }
   encodedStream = pTmp;
-  printf("Encoded:\n%s\n", encodedStream);
 
   free(pFormattedKey);
   free(rawKey);
@@ -195,3 +209,18 @@ int encodeChar(char charToEncode, char *key, char *encodedChar, int keyIndex) {
 
   return keyIndex;
 }
+
+// Not finished
+/*
+int decode(char *toDecode, char *keyFile, char *decodedStream) {
+  int bufferSize = 0;
+  int toDecodeIndex = 0;
+  int streamIndex = 0;
+  while (toDecode[toDecodeIndex] != '\0') {
+    char currentChar = toDecode[toDecodeIndex];
+    char *toAppend;
+    if (currentChar == '[') {
+      
+  decodedStream = realloc(decodedStream, sizeof(char)*4098);
+  strcpy(decodedStream, "hallo");
+}*/
