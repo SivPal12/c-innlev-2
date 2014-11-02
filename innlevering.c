@@ -69,8 +69,6 @@ int encode(const char *inputMessageFile, const char *keyFile,
       return tmp;
     }
 
-    printf("fabs: %d   keyIndex: %d   minSpacing: %d   tmp: %d   Keylen: %d\n",
-        (int)(fabs((int)(tmp % strlen(pFormattedKey)))),2,3,4,5);//, keyIndex, minSpacing, tmp, (int)strlen(pFormattedKey));*/
     if (fabs((int)(tmp % strlen(pFormattedKey)) - (keyIndex - minSpacing)) < minSpacing) {
       printf("Unable to satisfy min spacing\n");
       return 3;
@@ -163,7 +161,6 @@ char *readFile(const char *file) {
 }
 
 int encodeChar(char charToEncode, char *key, char *encodedChar, int keyIndex) {
-printf("To encode: %c\n", charToEncode);
   if (!isalpha(charToEncode)) {
     encodedChar = realloc(encodedChar, sizeof(char)*2);
     char buffer[2];
