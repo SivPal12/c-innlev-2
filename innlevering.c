@@ -5,7 +5,7 @@
 
 
 int encode(const char *inputMessageFile, const char *keyFile,
-    char *encodedStream);
+    char *encodedStream, int minSpacing);
 
 int formatKey(const char *keyFile, char *formattedKey);
 
@@ -13,51 +13,82 @@ char *readFile(const char *file);
 
 int encodeChar(char charToEncode, char *formattedKey, char *encodedChar, int keyIndex);
 
+/* return codes:
+ * 1 - mem alloc failed
+ * 2 - Could not open file
+ */
 int main (int argc, char *argv[]){
-  char *toEncode = "abc";
+  char *toEncode = "msg/msg.txt";
   char *pEncoded;
   char *pKeyFile = "songLibrary/sweetChildGR.txt";
-  encode(toEncode, pKeyFile, pEncoded);
+  int status = encode(toEncode, pKeyFile, pEncoded, minSpacing);
+  if (status != 0) {
+    return status;
+  }
 
   printf("%s", pEncoded);
+
+  return 1;
 }
 
 int encode(const char *inputMessageFile, const char *keyFile,
-    char *encodedStream) {
+    char *encodedStream, int minSpacing) {
   char *rawKey = readFile(keyFile);
   printf("Raw key:\n%s\n", rawKey);
-  // TODO Handle realloc failed
+
   char *pFormattedKey = malloc(0);
+  if (pFormattedKey == NULL) {
+    printf("Malloc failed\n");
+    return 1;
+  }
   // TODO Insert correct values
   formatKey(rawKey, pFormattedKey);
   printf("Formatted key:\n%s\n\n", pFormattedKey);
 
-  char *msgToEncode = "There is a consert.....";
+  char *msgToEncode = readFile(inputMessageFile);
+  if (msgToEncode == NULL) {
+    return 2;
+  }
+
   int msgIndex = 0, encodedSize = 0, keyIndex = 0, bufferSize = 0;
   while (msgToEncode[msgIndex] != '\0') {
     char *encodedChar = malloc(0);
+    if (encodedChar == NULL) {
+      printf("Malloc failed\n");
+      return 1;
+    }
+
     keyIndex = encodeChar(msgToEncode[msgIndex], pFormattedKey, encodedChar, keyIndex);
-    // TODO Extract to constant or parameter
-    keyIndex += 13;
+
+    keyIndex += minSpacing;
+
     int encodedCharLength = strlen(encodedChar);
     encodedSize += encodedCharLength;
     if (bufferSize <= encodedSize) {
       bufferSize += 4098;
-      // TODO handle failed
+
       encodedStream = realloc(encodedStream, sizeof(char)*bufferSize);
+      if (encodedStream == NULL) {
+        printf("Realloc failed\n");
+        return 1;
+      }
     }
     strcat(encodedStream, encodedChar);
     free(encodedChar);
     msgIndex++;
   }
 
-  // TODO Handle failed
   encodedStream = realloc(encodedStream, sizeof(char)*encodedSize);
+  if (encodedStream == NULL) {
+    printf("Realloc failed\n");
+    return 1;
+  }
 
   printf("Encoded:\n%s\n", encodedStream);
 
   free(pFormattedKey);
   free(rawKey);
+  return 0;
 }
 
 int formatKey(const char *key, char *formattedKey) {
@@ -129,6 +160,7 @@ printf("To encode: %c\n", charToEncode);
 
   while (tolower(charToEncode) != key[keyIndex]) {
     if (keyIndex++ >= keyLength) {
+      // TODO Avoid infinity loop
       keyIndex %= keyLength;
     }
   }
